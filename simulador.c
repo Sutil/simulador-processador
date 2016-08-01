@@ -10,6 +10,8 @@ int iniciouCarregamentoDasInstrucoes = 0;
 int contadorDeInstrucoes = 0;
 
 char* instrucao;
+int op1;
+
 
 //********** REGISTRADORES ******************
 
@@ -26,6 +28,30 @@ int PC; //: Program Counter
 char* IR; //: Instruction Register
 int MAR; //: Memory Address Register
 char* MBR; //: Memory Buffer Register
+
+struct Registrador {
+    char* nome;
+    char* valor;
+} ;
+
+struct Registrador registradores[13];
+
+
+void criaRegistradores(){
+    registradores[0].nome = "A";
+    registradores[1].nome = "B";
+    registradores[2].nome = "M1";
+    registradores[3].nome = "M2";
+    registradores[4].nome = "D1";
+    registradores[5].nome = "D2";
+    registradores[6].nome = "R";
+    registradores[7].nome = "C";
+    registradores[8].nome = "Z";
+    registradores[9].nome = "PC";
+    registradores[10].nome = "IR";
+    registradores[11].nome = "MAR";
+    registradores[12].nome = "MBR";
+}
 
 // *************** IMPRIMEM A SITUAÇÃO DA MEMÓRIA EM TELA ****************************
 void mostraMemoria(){
@@ -52,6 +78,8 @@ void mostraRegistradores(){
     printf("MAR: %d\n",MAR); //: Memory Address Register
     printf("MBR: %s\n",MBR); //: Memory Buffer Register
 }
+
+
 
 int hexaToInt(char* hexa){
     int retorno;
@@ -133,19 +161,47 @@ void decodificaInstrucao(){
     instrucao = token;
 }
 
+void calculaOp1(char* nomeRegistrador){
+    int i = 0;
+    while(strcmp(nomeRegistrador, registradores[i].nome) || i < 13)
+        i++;
+
+    op1 = i;
+}
+
+void calculaOp2(char* posicaoMemoria){
+    op2 = hexaToInt(posicaoMemoria);
+    MAR = op2;
+}
+
+void calculaEnderecoOperando(){
+    char* op1 = strtok(NULL," ,\t");
+    char* op2 = strtok(NULL," ,\t");
+
+    calculaOp1(op1);
+    calculaOp2(op2);
+}
+
+void buscaOperando(){
+ // colocar o valor de OP2 no registrador B
+}
+
 void executaPrograma(){
     buscaInstrucao();
     decodificaInstrucao();
+    calculaEnderecoOperando();
+    buscaOperando();
 }
 
 int main() {
+    criaRegistradores();
     carregaArquivo();
 
     printf("O Programa foi carregado e está pronto para ser executado.");
 
     executaPrograma();
 
-    mostraMemoria();
+    //mostraMemoria();
     mostraRegistradores();
 
     return 0;
